@@ -100,8 +100,6 @@ LC2.prototype.PC7msb = function () {
 
 // INSTRUCTIONS
 
-LC2.instructions = ['br', 'add', 'ld', 'st', 'jsr', 'and', 'ldr', 'str', 'rti', 'not', 'ldi', 'sti', 'jsrr', 'ret', 'lea', 'trap']
-
 LC2.prototype.br = function (nzp, dest) {
   if ((this.cc & nzp) !== 0) this.pc = this.PC7msb() + dest
   else this.pc++
