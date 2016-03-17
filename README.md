@@ -1,26 +1,54 @@
 # LC2.js
 
-Work in progress LC-2 emulator and debugger implemented in javascript.
+Work in progress LC-2 emulator, debugger and IDE implemented in Javascript.
 
-LC-2 is an older variant of the [LC-3 computer](https://en.wikipedia.org/wiki/LC-3), both are created for learning purposes.
+LC-2 is an older variant of the
+[LC-3 computer](https://en.wikipedia.org/wiki/LC-3),
+both are created for learning purposes.
 
-### What works
+### Status
 
-Almost nothing, it runs some machine code instructions sometimes without errors.
+- __CPU Emulator__
+    - mostly done, 14 out of 16 instructions implemented
+    - most other functions implemented
+    - not tested much yet
+    - no error handling
+- __Assembler__
+    - can parse instructions (14 out of 16)
+    - argument parsing mostly works but is incomplete
+    - can't build symbol table or understand labels yet
+    - no variable support yet
+    - no error handling implemented yet
+    - not tested much yet
+    - API to compile program not tested yet
+- __APIs__
+    - APIs to read binaries, write them or assemble programs not done yet
+- __User Interfaces__
+    - not started yet
+- __IDE__
+    - not started yet
 
 ### How to use it
+
+You can use the existing APIs for now, since there is no UI yet.
 
 On __node__:
 
 ```javascript
-var LC2 = require('LC2.js')
+// CPU emulator
+var LC2 = require('./LC2.js')
 var cpu = new LC2()
-// use it!
+// Assembler
+var Assembler = require('./assembler.js')
+var assembler = new Assembler()
+// use them! Read the code to figure out the API.
 ```
 
-On the __browser__, import the script, then the LC2 object should be attached to window and available globally. This has not been tested yet though.
+On the __browser__, import the script, then the LC2 object should be attached to
+window and available globally. This has not been tested yet though.
 
-The code is undocumented for now, and also super short, so take a look to see what you can do
+The code is mostly undocumented for now, and also super short, so take a look
+to see what you can do while it's still simple :+1:
 
 ### License
 
