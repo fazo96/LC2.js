@@ -26,7 +26,8 @@ function LC2 () {
 }
 
 LC2.prototype.reset = function () {
-  this.memory = new Uint16Array(Math.pow(2, 16))
+  this.memorySize = Math.pow(2, 16)
+  this.memory = new Uint16Array(this.memorySize)
   this.gpr = new Uint16Array(8)
   this.pc = 0
   this.cc = 0
@@ -54,15 +55,35 @@ LC2.trapvect8 = function (data) {
   return data & 255
 }
 
+LC2.prototype.loadProgram = function (program, pc) {
+  this.reset()
+  this.pc = pc || 0
+  // Copy program to memory
+  for (var i = 0; i < program.length; i++) {
+    this.memory[i] = program[i]
+  }
+}
+
+LC2.prototype.run = function () {
+  var halt = false
+  do {
+    halt = this.execute(this.memory[this.pc])
+  } while (!halt)
+}
+
 LC2.prototype.execute = function (op) {
   var opcode = op >>> 12
-  if (op === 0) this.nop()
-  else if (opcode === 0) { // BR
+  if (this.pc >= this.memorySize) {
+    return true
+  } if (op === 0) {
+    this.nop()
+    return true // halt TODO: remove this, should not halt
+  } else if (opcode === 0) { // BR
     var nzp = op >>> 9
     if (nzp === 0) this.nop()
     else this.br(nzp, this.pgoffset9(op))
   } else if (opcode === 1) { // ADD
-    if ((op & 32) > 0) { // use register
+    if ((op & 32) <= 0) { // use register
       let second_reg = (op & 7)
       this.add(LC2.dest(op), LC2.src(op), second_reg, true)
     } else { // use literal
@@ -121,7 +142,7 @@ LC2.prototype.PC7msb = function () {
 // INSTRUCTIONS
 
 LC2.prototype.br = function (nzp, dest) {
-  if ((this.cc & nzp) !== 0) this.pc = this.PC7msb() + dest
+  if ((this.cc & nzp) !== 0) this.pc = this.PC7msb() | dest
   else this.pc++
 }
 LC2.prototype.nop = function () { this.pc++ }
@@ -131,30 +152,30 @@ LC2.prototype.add = function (dest, a, b, use_register) {
   this.pc++
 }
 LC2.prototype.ld = function (dest, src) {
-  this.gpr[dest] = this.memory[src + this.PC7msb()]
+  this.gpr[dest] = this.memory[src | this.PC7msb()]
   this.setCC(dest)
   this.pc++
 }
 LC2.prototype.st = function (src, data) {
-  this.memory[data + this.PC7msb()] = this.gpr[src]
+  this.memory[data | this.PC7msb()] = this.gpr[src]
   this.pc++
 }
 LC2.prototype.ldi = function (dest, src) {
-  this.gpr[dest] = this.memory[this.memory[src + this.PC7msb()]]
+  this.gpr[dest] = this.memory[this.memory[src | this.PC7msb()]]
   this.setCC(dest)
   this.pc++
 }
 LC2.prototype.sri = function (src, data) {
-  this.memory[this.memory[data + this.PC7msb()]] = this.gpr[src]
+  this.memory[this.memory[data | this.PC7msb()]] = this.gpr[src]
   this.pc++
 }
 LC2.prototype.ldr = function (dest, br, index6) {
-  this.gpr[dest] = this.memory[this.gpr[br] + index6]
+  this.gpr[dest] = this.memory[this.gpr[br] | index6]
   this.setCC(dest)
   this.pc++
 }
 LC2.prototype.str = function (dest, br, index6) {
-  this.memory[this.gpr[br] + index6] = this.gpr[dest]
+  this.memory[this.gpr[br] | index6] = this.gpr[dest]
   this.pc++
 }
 LC2.prototype.and = function (dest, a, b, use_register) {
@@ -168,7 +189,7 @@ LC2.prototype.not = function (dest, src) {
   this.pc++
 }
 LC2.prototype.lea = function (dest, data) {
-  this.gpr[dest] = this.PC7msb() + data
+  this.gpr[dest] = this.PC7msb() | data
   this.setCC(dest)
   this.pc++
 }

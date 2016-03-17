@@ -29,7 +29,7 @@ var Assembler = function () {
 // Steps: string --> Object --> Binary
 Assembler.prototype.assemble = function (str) {
   this.symbolTable = {}
-  return str.split('\n')
+  var arr = str.split('\n')
   // --- Preprocessing
   // remove comments, save istruction position in source file
   .map((l, i) => {
@@ -47,6 +47,7 @@ Assembler.prototype.assemble = function (str) {
 
   // --- Postprocessing: convert to binary form (TODO)
   .map(this.buildInstruction, this)
+  return Uint16Array.from(arr)
 }
 
 Assembler.opnames = ['br', 'add', 'ld', 'st', 'jsr', 'and', 'ldr', 'str', 'rti', 'not', 'ldi', 'sti', 'jsrr', 'ret', 'lea', 'trap']
@@ -63,7 +64,9 @@ Assembler.prototype.parseInstruction = function (obj) {
   var parts = x.substring(opname.length).split(',')
   var opcode = opname.indexOf('br') === 0 ? 0 : Assembler.opnames.indexOf(opname.toLowerCase())
   var args = parts.map(l => l.trim()).map(this.parseArgument, this)
-  return { label: label, opname: opname, opcode: opcode, args: args }
+  var ret = { label: label, opname: opname, opcode: opcode, args: args }
+  console.log(x + ' -->', ret)
+  return ret
 }
 
 Assembler.pgoffset9 = function (data) {
@@ -80,7 +83,7 @@ Assembler.trapvect8 = function (data) {
 
 // Takes instruction in object form and returns instruction in binary
 Assembler.prototype.buildInstruction = function (x) {
-  var res = x.opcode << 13
+  var res = x.opcode << 12
   var dst, src, i6, mem
   if (x.opcode === 0) { // BR
     var nzp = 0
@@ -90,28 +93,30 @@ Assembler.prototype.buildInstruction = function (x) {
     var arg = Assembler.pgoffset9(this.buildArgument(x.args[0]))
     return res | arg | (nzp << 9)
   } else if (x.opcode === 1 || x.opcode === 5) { // ADD, AND
+    dst = this.buildArgument(x.args[0])
+    src = this.buildArgument(x.args[1])
     if (x.args[2].register !== undefined) { // Use register
-      return res | x.args[2].register | (src << 7) | (dst << 10)
+      return res | x.args[2].register | (src << 7) | (dst << 9)
     } else { // Use literal
-      return res | x.args[2].literal | (src << 7) | (dst << 10) | 32
+      return res | x.args[2].literal | (src << 7) | (dst << 9) | 32
     }
   } else if (x.opcode >= 2 && x.opcode <= 4) { // LD, ST, JSR
     dst = this.buildArgument(x.args[0])
     src = Assembler.pgoffset9(this.buildArgument(x.args[1]))
-    return res | (dst << 10) | src
+    return res | (dst << 9) | src
   } else if (x.opcode === 6 || x.opcode === 7) { // LDR, STR
     dst = this.buildArgument(x.args[0])
     src = this.buildArgument(x.args[1])
     i6 = Assembler.index6(this.buildArgument(x.args[2]))
-    return res | i6 | (src << 7) | (dst << 10)
+    return res | i6 | (src << 7) | (dst << 9)
   } else if (x.opcode === 8) { // RTI
     return res
   } else if (x.opcode === 9) { // NOT
-    return res | 127 | (src << 7) | (dst << 10)
+    return res | 127 | (src << 7) | (dst << 9)
   } else if (x.opcode === 10 || x.opcode === 11) { // LDI, STI
     dst = this.buildArgument(x.args[0])
     mem = this.buildArgument(x.args[1])
-    return res | (dst << 10) | mem
+    return res | (dst << 9) | mem
   } else if (x.opcode === 12) { // JSRR
     src = this.buildArgument(x.args[0])
     i6 = this.buildArgument(x.args[1])
@@ -121,7 +126,7 @@ Assembler.prototype.buildInstruction = function (x) {
   } else if (x.opcode === 14) { // LEA
     var pg9 = Assembler.pgoffset9(this.buildArgument(x.args[1]))
     dst = this.buildArgument(x.args[0])
-    return res | (dst << 10) | pg9
+    return res | (dst << 9) | pg9
   } else if (x.opcode === 15) { // TRAP
     var tv8 = this.buildArgument(x.args[0])
     return res | Assembler.trapvect8(tv8)
