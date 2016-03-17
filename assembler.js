@@ -105,8 +105,6 @@ Assembler.prototype.buildInstruction = function (x) {
   } else if (x.opcode === 8) { // RTI
     return res
   } else if (x.opcode === 9) { // NOT
-    console.log(dst, src)
-    console.log((src << 7), (dst << 10))
     return res | 127 | (src << 7) | (dst << 10)
   } else if (x.opcode === 10 || x.opcode === 11) { // LDI, STI
     dst = this.buildArgument(x.args[0])
