@@ -11,6 +11,7 @@ both are created for learning purposes.
 - __CPU Emulator__
     - mostly done, 14 out of 16 instructions implemented
     - most other functions implemented
+    - systems calls (TRAP) not implemented yet
     - not tested much yet
     - no error handling
 - __Assembler__
