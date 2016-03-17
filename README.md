@@ -15,6 +15,7 @@ both are created for learning purposes.
     - no error handling
 - __Assembler__
     - can parse instructions (14 out of 16)
+    - no pseudo-instruction support yet
     - argument parsing mostly works but is incomplete
     - can't build symbol table or understand labels yet
     - no variable support yet
