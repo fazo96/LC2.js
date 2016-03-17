@@ -9,20 +9,19 @@ both are created for learning purposes.
 ### Status
 
 - __CPU Emulator__
-    - mostly done, 14 out of 16 instructions implemented
-    - most other functions implemented
+    - ISA fully implemented
     - systems calls (TRAP) not implemented yet
+    - most other CPU features implemented
     - not tested much yet
     - no error handling
 - __Assembler__
-    - can parse instructions (14 out of 16)
+    - can parse all instructions with arguments
     - no pseudo-instruction support yet
-    - argument parsing mostly works but is incomplete
-    - can't build symbol table or understand labels yet
-    - no variable support yet
-    - no error handling implemented yet
+    - symbol table building and argument labels not working yet
+    - instruction labels are parsed but ignored
+    - error handling not implemented yet
     - not tested much yet
-    - API to compile program not tested yet
+    - API to compile a full program not done yet
 - __APIs__
     - APIs to read binaries, write them or assemble programs not done yet
 - __User Interfaces__

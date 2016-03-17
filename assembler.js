@@ -89,14 +89,16 @@ Assembler.prototype.buildInstruction = function (x) {
     if (x.opname.indexOf('p') > 0) nzp = nzp | 1
     var arg = Assembler.pgoffset9(this.buildArgument(x.args[0]))
     return res | arg | (nzp << 9)
-  } else if (x.opcode === 1) { // ADD
-
+  } else if (x.opcode === 1 || x.opcode === 5) { // ADD, AND
+    if (x.args[2].register !== undefined) { // Use register
+      return res | x.args[2].register | (src << 7) | (dst << 10)
+    } else { // Use literal
+      return res | x.args[2].literal | (src << 7) | (dst << 10) | 32
+    }
   } else if (x.opcode >= 2 && x.opcode <= 4) { // LD, ST, JSR
     dst = this.buildArgument(x.args[0])
     src = Assembler.pgoffset9(this.buildArgument(x.args[1]))
     return res | (dst << 10) | src
-  } else if (x.opcode === 5) { // AND
-
   } else if (x.opcode === 6 || x.opcode === 7) { // LDR, STR
     dst = this.buildArgument(x.args[0])
     src = this.buildArgument(x.args[1])

@@ -180,6 +180,15 @@ LC2.prototype.trap = function (trapvect8) {
   this.gpr[7] = this.pc
   this.pc = this.memory[trapvect8]
 }
+LC2.prototype.ret = function () {
+  this.pc = this.gpr[7]
+}
+LC2.prototype.rti = function () {
+  this.setCC(6)
+  this.gpr[6] = this.gpr[6] - 1
+  this.pc = this.memory[this.gpr[6]]
+  this.gpr[6] = this.gpr[6] - 1
+}
 
 // END INSTRUCTIONS
 
