@@ -1,0 +1,22 @@
+{
+  "name": "lc2.js",
+  "version": "0.1.0",
+  "description": "LC-2 CPU emulator, assembler and debugger",
+  "main": "cli.js",
+  "bin": {
+    "lc2": "cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fazo96/LC2.js.git"
+  },
+  "author": "Enrico Fasoli (fazo96)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/fazo96/LC2.js/issues"
+  },
+  "homepage": "https://github.com/fazo96/LC2.js#readme",
+  "dependencies": {
+    "commander": "^2.9.0"
+  }
+}

@@ -21,8 +21,9 @@
 
 'use strict'
 
-function LC2 () {
+function LC2 (debug) {
   this.reset()
+  this.debug = debug
 }
 
 LC2.prototype.reset = function () {
@@ -31,6 +32,64 @@ LC2.prototype.reset = function () {
   this.gpr = new Uint16Array(8)
   this.pc = 0
   this.cc = 0
+}
+
+LC2.prototype.loadProgram = function (program, pc) {
+  this.reset()
+  this.pc = pc || 0
+  // Copy program to memory
+  for (var i = 0; i < program.length; i++) {
+    this.memory[i] = program[i]
+  }
+}
+
+LC2.prototype.run = function () {
+  var halt = false
+  do {
+    halt = this.execute(this.memory[this.pc])
+  } while (!halt)
+}
+
+LC2.pad = function (arg, len) {
+  if (typeof arg !== 'string') arg = arg.toString()
+  while (arg.length < len) arg = '0' + arg
+  return arg
+}
+
+LC2.prototype.findSmartEnd = function () {
+  var i = 0
+  while (this.memory[i] !== 0) i++
+  if (i >= this.memorySize) return this.memorySize - 1
+  return i
+}
+
+LC2.prototype.memdump = function (start, end) {
+  if (end === undefined) {
+    end = start || this.findSmartEnd()
+  }
+  if (start === undefined) start = 0
+  var s = []
+  for (var i = start; i < end; i++) {
+    s.push(LC2.pad(i.toString(16), 4) + ' | x' + LC2.pad(this.memory[i].toString(16), 4) + ' b' + LC2.pad(this.memory[i].toString(2), 16) + ' ' + this.memory[i])
+  }
+  return s
+}
+
+LC2.prototype.regdump = function () {
+  var s = []
+  for (var i = 0; i <= 7; i++) {
+    s.push('r' + i + ' | x' + LC2.pad(this.gpr[i].toString(16), 4) + ' b' + LC2.pad(this.gpr[i].toString(2), 16) + ' ' + this.gpr[i])
+  }
+  return s
+}
+
+// UTILS
+
+LC2.prototype.setCC = function (reg) {
+  var data = this.gpr[reg]
+  if (data < 0) this.cc = 4
+  else if (data > 0) this.cc = 1
+  else this.cc = 2
 }
 
 LC2.dest_loc = parseInt('0000111000000000', 2)
@@ -55,23 +114,14 @@ LC2.trapvect8 = function (data) {
   return data & 255
 }
 
-LC2.prototype.loadProgram = function (program, pc) {
-  this.reset()
-  this.pc = pc || 0
-  // Copy program to memory
-  for (var i = 0; i < program.length; i++) {
-    this.memory[i] = program[i]
-  }
+LC2.prototype.PC7msb = function () {
+  return this.pc & parseInt('1111111000000000', 2)
 }
 
-LC2.prototype.run = function () {
-  var halt = false
-  do {
-    halt = this.execute(this.memory[this.pc])
-  } while (!halt)
-}
+// DECODER
 
 LC2.prototype.execute = function (op) {
+  if (this.debug) console.log('Running: ' + LC2.pad(op.toString(2), 16))
   var opcode = op >>> 12
   if (this.pc >= this.memorySize) {
     return true
@@ -126,17 +176,6 @@ LC2.prototype.execute = function (op) {
   } else if (opcode === 15) { // TRAP
     this.trap(LC2.trapvect8(op))
   }
-}
-
-LC2.prototype.setCC = function (reg) {
-  var data = this.gpr[reg]
-  if (data < 0) this.cc = 4
-  else if (data > 0) this.cc = 1
-  else this.cc = 2
-}
-
-LC2.prototype.PC7msb = function () {
-  return this.pc & parseInt('1111111000000000', 2)
 }
 
 // INSTRUCTIONS
@@ -211,6 +250,6 @@ LC2.prototype.rti = function () {
   this.gpr[6] = this.gpr[6] - 1
 }
 
-// END INSTRUCTIONS
+// END
 
 if (module && module.exports) module.exports = LC2

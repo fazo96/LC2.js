@@ -21,17 +21,35 @@ both are created for learning purposes.
     - instruction labels are parsed but ignored
     - error handling not implemented yet
     - not tested much yet
-    - API to compile a full program not done yet
 - __APIs__
-    - APIs to read binaries, write them or assemble programs not done yet
+    - Undocumented, but mostly done.
 - __User Interfaces__
-    - not started yet
-- __IDE__
-    - not started yet
+    - Command Line Interface available as the `lc2` command
+        - can be used to assemble programs and run binaries
+        - not yet compatible with other emulators
+    - No graphical user interface or IDE yet
 
 ### How to use it
 
-You can use the existing APIs for now, since there is no UI yet.
+A CLI and the API are available now. In the future I'll make a graphical user
+interface for the browser.
+
+#### Command Line Interface
+
+__Notice__: this software is still experimental and also incomplete.
+Documentation is also still lacking.
+
+1. clone this repository, then `cd` to its directory
+1. run `npm install -g .`
+1. use the newly available `lc2` command
+
+The CLI will be available on NPM once a stable release is ready.
+
+#### API
+
+the LC2 emulator and Assembler both offer an API so that you can use them
+programmatically. These APIs are not documented yet but will be once a stable,
+complete version arrives.
 
 On __node__:
 
@@ -42,14 +60,13 @@ var cpu = new LC2()
 // Assembler
 var Assembler = require('./assembler.js')
 var assembler = new Assembler()
-// use them! Read the code to figure out the API.
+// use them! Read the code to figure out the API, in the future proper docs will
+// exist.
 ```
 
-On the __browser__, import the script, then the LC2 object should be attached to
-window and available globally. This has not been tested yet though.
-
-The code is mostly undocumented for now, and also super short, so take a look
-to see what you can do while it's still simple :+1:
+On the __browser__, import the scripts, then the LC2 and Assembler objects
+should be attached to window and available globally.
+This has not been tested yet though.
 
 ### License
 

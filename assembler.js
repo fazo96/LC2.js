@@ -21,8 +21,9 @@
 
 'use strict'
 
-var Assembler = function () {
+var Assembler = function (debug) {
   this.symbolTable = {}
+  this.debug = debug || false
 }
 
 // Takes a program in string form and returns a program in binary form
@@ -31,10 +32,10 @@ Assembler.prototype.assemble = function (str) {
   this.symbolTable = {}
   var arr = str.split('\n')
   // --- Preprocessing
-  // remove comments, save istruction position in source file
+  // remove comments, save istruction row number in source file
   .map((l, i) => {
     return {
-      position: i,
+      row: i,
       string: l.split(';', 1)[0].trim()
     }
   })
@@ -48,6 +49,12 @@ Assembler.prototype.assemble = function (str) {
   // --- Postprocessing: convert to binary form (TODO)
   .map(this.buildInstruction, this)
   return Uint16Array.from(arr)
+}
+
+Assembler.pad = function (arg, len) {
+  if (typeof arg !== 'string') arg = arg.toString()
+  while (arg.length < len) arg = '0' + arg
+  return arg
 }
 
 Assembler.opnames = ['br', 'add', 'ld', 'st', 'jsr', 'and', 'ldr', 'str', 'rti', 'not', 'ldi', 'sti', 'jsrr', 'ret', 'lea', 'trap']
@@ -64,8 +71,8 @@ Assembler.prototype.parseInstruction = function (obj) {
   var parts = x.substring(opname.length).split(',')
   var opcode = opname.indexOf('br') === 0 ? 0 : Assembler.opnames.indexOf(opname.toLowerCase())
   var args = parts.map(l => l.trim()).map(this.parseArgument, this)
-  var ret = { label: label, opname: opname, opcode: opcode, args: args }
-  console.log(x + ' -->', ret)
+  var ret = { row: obj.row, label: label, opname: opname, opcode: opcode, args: args }
+  if (this.debug) console.log(x + ' -->\n', ret)
   return ret
 }
 
@@ -91,46 +98,48 @@ Assembler.prototype.buildInstruction = function (x) {
     if (x.opname.indexOf('z') > 0) nzp = nzp | 2
     if (x.opname.indexOf('p') > 0) nzp = nzp | 1
     var arg = Assembler.pgoffset9(this.buildArgument(x.args[0]))
-    return res | arg | (nzp << 9)
+    res = res | arg | (nzp << 9)
   } else if (x.opcode === 1 || x.opcode === 5) { // ADD, AND
     dst = this.buildArgument(x.args[0])
     src = this.buildArgument(x.args[1])
     if (x.args[2].register !== undefined) { // Use register
-      return res | x.args[2].register | (src << 7) | (dst << 9)
+      res = res | x.args[2].register | (src << 7) | (dst << 9)
     } else { // Use literal
-      return res | x.args[2].literal | (src << 7) | (dst << 9) | 32
+      res = res | x.args[2].literal | (src << 7) | (dst << 9) | 32
     }
   } else if (x.opcode >= 2 && x.opcode <= 4) { // LD, ST, JSR
     dst = this.buildArgument(x.args[0])
     src = Assembler.pgoffset9(this.buildArgument(x.args[1]))
-    return res | (dst << 9) | src
+    res = res | (dst << 9) | src
   } else if (x.opcode === 6 || x.opcode === 7) { // LDR, STR
     dst = this.buildArgument(x.args[0])
     src = this.buildArgument(x.args[1])
     i6 = Assembler.index6(this.buildArgument(x.args[2]))
-    return res | i6 | (src << 7) | (dst << 9)
+    res = res | i6 | (src << 7) | (dst << 9)
   } else if (x.opcode === 8) { // RTI
-    return res
+    // Nothing to do
   } else if (x.opcode === 9) { // NOT
-    return res | 127 | (src << 7) | (dst << 9)
+    res = res | 127 | (src << 7) | (dst << 9)
   } else if (x.opcode === 10 || x.opcode === 11) { // LDI, STI
     dst = this.buildArgument(x.args[0])
     mem = this.buildArgument(x.args[1])
-    return res | (dst << 9) | mem
+    res = res | (dst << 9) | mem
   } else if (x.opcode === 12) { // JSRR
     src = this.buildArgument(x.args[0])
     i6 = this.buildArgument(x.args[1])
-    return res | (src << 7) | i6
+    res = res | (src << 7) | i6
   } else if (x.opcode === 13) { // RET
-    return res
+    res = res
   } else if (x.opcode === 14) { // LEA
     var pg9 = Assembler.pgoffset9(this.buildArgument(x.args[1]))
     dst = this.buildArgument(x.args[0])
-    return res | (dst << 9) | pg9
+    res = res | (dst << 9) | pg9
   } else if (x.opcode === 15) { // TRAP
     var tv8 = this.buildArgument(x.args[0])
-    return res | Assembler.trapvect8(tv8)
+    res = res | Assembler.trapvect8(tv8)
   }
+  if (this.debug) console.log('Assembling: ' + Assembler.pad(res.toString(2), 16))
+  return res
 }
 
 Assembler.prototype.buildArgument = function (x) {
