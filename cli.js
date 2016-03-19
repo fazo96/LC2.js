@@ -22,10 +22,10 @@
 
 // Tip: install this package globally with npm to use this tool from anywhere.
 
-var common = require('./common.js')
+var common = require('./lib/common.js')
 
-var Assembler = require('./assembler.js')
-var LC2 = require('./LC2.js')
+var Assembler = require('./lib/assembler.js')
+var LC2 = require('./lib/LC2.js')
 var cli = require('commander')
 var fs = require('fs')
 var proginfo = require('./package.json')
