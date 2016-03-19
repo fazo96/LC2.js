@@ -9,4 +9,4 @@
 add r0, r0, #4
 add r1, r1, #2
 add r2, r0, r1
-st r2, #4
+trap x25

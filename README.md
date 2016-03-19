@@ -6,11 +6,14 @@ LC-2 is an older variant of the
 [LC-3 computer](https://en.wikipedia.org/wiki/LC-3),
 both are created for learning purposes.
 
+You can find Documentation on the LC-2 in
+[this PDF](https://www.cs.utexas.edu/users/fussell/cs310h/simulator/lc2.pdf).
+
 ### Status
 
 - __CPU Emulator__
     - ISA fully implemented
-    - systems calls (TRAP) not implemented yet
+    - IO systems calls (TRAP) not implemented yet
     - most other CPU features implemented
     - not tested much yet
     - no error handling

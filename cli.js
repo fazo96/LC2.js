@@ -22,6 +22,8 @@
 
 // Tip: install this package globally with npm to use this tool from anywhere.
 
+var common = require('./common.js')
+
 var Assembler = require('./assembler.js')
 var LC2 = require('./LC2.js')
 var cli = require('commander')
@@ -44,7 +46,7 @@ cli
       } else {
         var assembler = new Assembler(cli.debug)
         var binary = assembler.assemble(data.toString())
-        if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => Assembler.pad(x.toString(2), 16)))
+        if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => common.pad(x.toString(2), 16)))
         var buffer = new Buffer(binary.buffer)
         if (cli.debug) console.log('WRITING BUFFER:', buffer)
         fs.writeFile(output, buffer, err => {
