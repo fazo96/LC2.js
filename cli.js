@@ -92,7 +92,8 @@ cli
         // Convert Buffer to Uint16Array
         var arr = new Uint16Array(data.length / 2)
         for (var i = 0; i < data.length; i += 2) {
-          arr[i / 2] = (data[i + 1] << 8) | data[i] // Little endian
+          // arr[i / 2] = (data[i + 1] << 8) | data[i] // Little endian
+          arr[i / 2] = (data[i] << 8) | data[i + 1] // Big endian
         }
         console.log('Loading Program...')
         cpu.loadProgram(arr)

@@ -12,14 +12,11 @@ You can find Documentation on the LC-2 in
 ### Status
 
 - __CPU Emulator__
-    - ISA fully implemented
-    - IO systems calls (TRAP) not implemented yet
-    - most other CPU features implemented
+    - ISA and IO fully implemented
     - not tested much yet
-    - no error handling
 - __Assembler__
     - can parse all instructions with arguments
-    - no pseudo-instruction support yet
+    - pseudo instruction implementation started, not done yet
     - symbol table building and argument labels not working yet
     - instruction labels are parsed but ignored
     - error handling not implemented yet
@@ -29,7 +26,7 @@ You can find Documentation on the LC-2 in
 - __User Interfaces__
     - Command Line Interface available as the `lc2` command
         - can be used to assemble programs and run binaries
-        - not yet compatible with other emulators
+        - fully compatible with the reference emulator and assembler
     - No graphical user interface or IDE yet
 
 ### How to use it
@@ -67,9 +64,9 @@ var assembler = new Assembler()
 // exist.
 ```
 
-On the __browser__, import the scripts, then the LC2 and Assembler objects
-should be attached to window and available globally.
-This has not been tested yet though.
+On the __browser__, import `lib/common.js` then the other scripts depending on
+which you need. Assembler and LC2 should then be attached to window and
+available globally. This has not been tested yet though.
 
 ### License
 
