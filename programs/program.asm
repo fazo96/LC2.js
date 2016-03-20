@@ -2,11 +2,10 @@
 ; Use the included cli.js CLI or globally install this package and use the lc2
 ; executable to assemble and run this program
 
-; This program is just some random instructions for debugging
-; purposes. In the future, simple but actually purposeful programs will be
-; included with this emulator
+; This program takes a number and writes it back doubled.
+; In the future more serious examples will be bundled with the emulator
 
-add r0, r0, #4
-add r1, r1, #2
-add r2, r0, r1
-trap x25
+trap  x23           ; Read Character (with prompt) into r0
+add   r0, r0, r0    ; double the number
+trap  x21           ; print result
+trap  x25           ; halt

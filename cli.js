@@ -28,9 +28,28 @@ var Assembler = require('./lib/assembler.js')
 var LC2 = require('./lib/LC2.js')
 var cli = require('commander')
 var fs = require('fs')
+var process = require('process')
 var proginfo = require('./package.json')
 
 var done = false
+
+function readChar (block, done) {
+  process.stdin.setEncoding('utf8')
+  process.stdin.setRawMode(!block)
+  if (block) process.stdin.write('$> ')
+  var cb = function () {
+    var r = process.stdin.read()
+    if (r !== null) {
+      done(r)
+      process.stdin.removeListener('readable', cb)
+    }
+  }
+  process.stdin.on('readable', cb)
+}
+
+function writeToStdout (x) {
+  process.stdout.write(x.toString())
+}
 
 cli
   .version(proginfo.version)
@@ -40,6 +59,7 @@ cli
 cli
   .command('assemble <source> <output>')
   .action((file, output) => {
+    done = true
     fs.readFile(file, (err, data) => {
       if (err) {
         console.log('[FATAL] There was an error while reading the file:', err)
@@ -56,17 +76,20 @@ cli
         })
       }
     })
-    done = true
   })
 
 cli
   .command('run <binary>')
   .action(file => {
+    done = true
     fs.readFile(file, (err, data) => {
       if (err) {
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
         var cpu = new LC2(cli.debug)
+        cpu.readChar = readChar
+        cpu.writeString = cpu.writeChar = writeToStdout
+        // Convert Buffer to Uint16Array
         var arr = new Uint16Array(data.length / 2)
         for (var i = 0; i < data.length; i += 2) {
           arr[i / 2] = (data[i + 1] << 8) | data[i] // Little endian
@@ -74,13 +97,13 @@ cli
         console.log('Loading Program...')
         cpu.loadProgram(arr)
         console.log('Running Program...')
-        cpu.run()
-        console.log('Done.\n')
-        console.log('=== MEM DUMP ===\n' + cpu.memdump().join('\n'))
-        console.log('\n=== REG DUMP ===\n' + cpu.regdump().join('\n'))
+        cpu.run(() => {
+          console.log('\n\n=== MEM DUMP ===\n' + cpu.memdump().join('\n'))
+          console.log('\n=== REG DUMP ===\n' + cpu.regdump().join('\n'))
+          process.exit() // workaround for stdin event listener hanging
+        })
       }
     })
-    done = true
   })
 
 cli.parse(process.argv)
