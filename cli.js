@@ -58,6 +58,7 @@ cli
 
 cli
   .command('assemble <source> <output>')
+  .description('assembles an LC-2 Assembly program')
   .action((file, output) => {
     done = true
     fs.readFile(file, (err, data) => {
@@ -80,7 +81,9 @@ cli
 
 cli
   .command('run <binary>')
-  .action(file => {
+  .description('executes an LC-2 binary program')
+  .option('-m, --mem-dump', 'dumps all the memory when done')
+  .action((file, options) => {
     done = true
     fs.readFile(file, (err, data) => {
       if (err) {
@@ -99,8 +102,8 @@ cli
         cpu.loadProgram(arr)
         console.log('Running Program...')
         cpu.run(() => {
-          console.log('\n\n=== MEM DUMP ===\n' + cpu.memdump().join('\n'))
           console.log('\n=== REG DUMP ===\n' + cpu.regdump().join('\n'))
+          if (options.memDump) console.log('\n\n=== MEM DUMP ===\n' + cpu.memdump(0, 65535).join('\n'))
           process.exit() // workaround for stdin event listener hanging
         })
       }
