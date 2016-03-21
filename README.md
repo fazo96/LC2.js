@@ -16,7 +16,7 @@ You can find Documentation on the LC-2 in
     - not tested much yet
 - __Assembler__
     - can parse all instructions with arguments
-    - pseudo instruction implementation started, not done yet
+    - pseudo instruction implementation half done, not finished yet
     - symbol table building and argument labels not working yet
     - instruction labels are parsed but ignored
     - error handling not implemented yet
