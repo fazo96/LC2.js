@@ -12,21 +12,18 @@ You can find Documentation on the LC-2 in
 ### Status
 
 - __CPU Emulator__
-    - ISA and IO fully implemented
-    - not tested much yet
+    - feature complete with original emulator except:
+        - missing TRAP subroutine to print strings
+    - not tested much yet, bugs be haunting the code!
 - __Assembler__
-    - can parse all instructions with arguments
-    - pseudo instruction implementation half done, not finished yet
-    - symbol table building and argument labels not working yet
-    - instruction labels are parsed but ignored
+    - feature complete with original assembler except:
+        - missing .STRINGZ pseudoinstruction implementation
     - error handling not implemented yet
-    - not tested much yet
+    - really buggy at the moment
 - __APIs__
-    - Undocumented, but mostly done.
+    - Undocumented, but complete
 - __User Interfaces__
-    - Command Line Interface available as the `lc2` command
-        - can be used to assemble programs and run binaries
-        - fully compatible with the reference emulator and assembler
+    - Command Line Interface (available as the `lc2` command) done
     - No graphical user interface or IDE yet
 
 ### How to use it
