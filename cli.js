@@ -57,6 +57,22 @@ cli
   .option('-d, --debug', 'enable debugging information')
 
 cli
+  .command('parse <source>')
+  .description('parses an LC-2 Assembly program and outputs the result in human readable form')
+  .action(file => {
+    done = true
+    fs.readFile(file, (err, data) => {
+      if (err) {
+        console.log('[FATAL] There was an error while reading the file:', err)
+      } else {
+        var assembler = new Assembler(cli.debug)
+        var res = assembler.toList(assembler.assemble(data.toString()))
+        console.log(res.join('\n'))
+      }
+    })
+  })
+
+cli
   .command('assemble <source> <output>')
   .description('assembles an LC-2 Assembly program')
   .action((file, output) => {
@@ -66,7 +82,7 @@ cli
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
         var assembler = new Assembler(cli.debug)
-        var binary = assembler.assemble(data.toString())
+        var binary = assembler.toBinary(assembler.assemble(data.toString()))
         if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => common.pad(x.toString(2), 16)))
         var buffer = new Buffer(binary.buffer)
         if (cli.debug) console.log('WRITING BUFFER:', buffer)
