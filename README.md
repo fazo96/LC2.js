@@ -12,14 +12,13 @@ You can find Documentation on the LC-2 in
 ### Status
 
 - __CPU Emulator__
-    - feature complete with original emulator except:
-        - missing TRAP subroutine to print strings
+    - feature complete with original emulator
     - not tested much yet, bugs be haunting the code!
 - __Assembler__
     - feature complete with original assembler except:
         - missing .STRINGZ pseudoinstruction implementation
     - error handling not implemented yet
-    - really buggy at the moment
+    - buggy at the moment
 - __APIs__
     - Undocumented, but complete
 - __User Interfaces__
