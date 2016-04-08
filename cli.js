@@ -40,7 +40,7 @@ function readChar (block, done, prompt) {
   var cb = function () {
     var r = process.stdin.read()
     if (r !== null) {
-      done(r)
+      done(r.charCodeAt(0))
       process.stdin.removeListener('readable', cb)
     }
   }
@@ -108,7 +108,7 @@ cli
       } else {
         var cpu = new LC2(cli.debug)
         cpu.readChar = readChar
-        cpu.writeString = cpu.writeChar = writeToStdout
+        // cpu.writeString = cpu.writeChar = writeToStdout
         // Convert Buffer to Uint16Array
         var arr = new Uint16Array(data.length / 2)
         for (var i = 0; i < data.length; i += 2) {
