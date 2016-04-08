@@ -47,10 +47,6 @@ function readChar (block, done, prompt) {
   process.stdin.on('readable', cb)
 }
 
-function writeToStdout (x) {
-  process.stdout.write(x.toString())
-}
-
 cli
   .version(proginfo.version)
   .description(proginfo.description)
@@ -75,13 +71,14 @@ cli
 cli
   .command('assemble <source> <output>')
   .description('assembles an LC-2 Assembly program')
-  .action((file, output) => {
+  .option('-m, --magic', 'enable Magic: this turns on useful features not supported by the original LC2 Assembler')
+  .action((file, output, options) => {
     done = true
     fs.readFile(file, (err, data) => {
       if (err) {
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
-        var assembler = new Assembler(cli.debug)
+        var assembler = new Assembler(cli.debug, options.magic)
         var binary = assembler.toBinary(assembler.assemble(data.toString()))
         if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => common.pad(x.toString(2), 16)))
         var buffer = new Buffer(binary.buffer)
