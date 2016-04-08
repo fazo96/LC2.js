@@ -12,18 +12,23 @@ You can find Documentation on the LC-2 in
 ### Status
 
 - __CPU Emulator__
-    - feature complete with original emulator
-    - not tested much yet, bugs be haunting the code!
+    - feature complete with original emulator, except:
+      - subroutines are not yet implemented correctly, they are simulated in javascript instead of running on LC2 code
+    - some features we plan on adding are still missing:
+      - support for custom peripherals that you can write in javascript
+      - support for interrupts
+    - debug mode is a little ugly
+    - needs more testing
 - __Assembler__
-    - feature complete with original assembler except:
-        - missing .STRINGZ pseudoinstruction implementation
-    - error handling not implemented yet
-    - buggy at the moment
+    - feature complete with original assembler
+    - error handling is not very helpful, some errors aren't even caught
+    - debug mode is a little ugly
+    - needs more testing
 - __APIs__
-    - Undocumented, but complete
+    - undocumented, but mostly complete
 - __User Interfaces__
     - Command Line Interface (available as the `lc2` command) done
-    - No graphical user interface or IDE yet
+    - no graphical user interface or IDE yet
 
 ### How to use it
 
