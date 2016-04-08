@@ -2,7 +2,7 @@
   "name": "lc2.js",
   "version": "0.1.0",
   "description": "LC-2 CPU emulator, assembler and debugger",
-  "main": "cli.js",
+  "main": "lib.js",
   "bin": {
     "lc2": "cli.js"
   },
