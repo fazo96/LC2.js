@@ -33,10 +33,10 @@ var proginfo = require('./package.json')
 
 var done = false
 
-function readChar (block, done) {
+function readChar (block, done, prompt) {
   process.stdin.setEncoding('utf8')
   process.stdin.setRawMode(!block)
-  if (block) process.stdin.write('$> ')
+  if (block) process.stdin.write(prompt || '$> ')
   var cb = function () {
     var r = process.stdin.read()
     if (r !== null) {
@@ -99,6 +99,7 @@ cli
   .command('run <binary>')
   .description('executes an LC-2 binary program')
   .option('-m, --mem-dump', 'dumps all the memory when done')
+  .option('-s, --step', 'go step by step. Press enter after a step to perform the next one')
   .action((file, options) => {
     done = true
     fs.readFile(file, (err, data) => {
@@ -114,14 +115,31 @@ cli
           // arr[i / 2] = (data[i + 1] << 8) | data[i] // Little endian
           arr[i / 2] = (data[i] << 8) | data[i + 1] // Big endian
         }
+        if (options.step && !cli.debug) console.log('[WARNING] Step By Step enabled, but debug mode disabled!')
         console.log('Loading Program...')
         cpu.loadProgram(arr)
-        console.log('Running Program...')
-        cpu.run(() => {
+        function end () {
           console.log('\n=== REG DUMP ===\n' + cpu.regdump().join('\n'))
           if (options.memDump) console.log('\n\n=== MEM DUMP ===\n' + cpu.memdump(0, 65535).join('\n'))
           process.exit() // workaround for stdin event listener hanging
-        })
+        }
+        if (options.step) { // Step by step
+          console.log('Running Program Step by Step...')
+          function cb (finished) {
+            if (finished) {
+              end()
+            } else {
+              if (cli.debug) {
+                console.log(cpu.regdump().join('\n'))
+              }
+              readChar(true, () => cpu.step(cb), 'Press enter to perform next step.')
+            }
+          }
+          cpu.step(cb)
+        } else { // Run program
+          console.log('Running Program...')
+          cpu.run(end)
+        }
       }
     })
   })
