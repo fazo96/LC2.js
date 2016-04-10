@@ -49,6 +49,43 @@ r1_bak .BLKW 1
 
 ;###################################
 
+PUTS_fn
+
+;###################################
+
+; Backup registers
+ST r0, r0_bak
+ST r1, r1_bak
+ST r7, r7_bak
+
+; Load dest address to r1
+and r1, r1, #0
+add r1, r0, #0
+
+; character addr is already in r0
+; stop if character is 0
+puts_loop
+LDR r0, r1, #0
+brz ret_puts
+; print a character and advance pointer
+OUT
+add r1, r1, #1
+brnzp puts_loop
+
+; Reload registers and return
+ret_puts
+
+LD r0, r0_bak
+LD r1, r1_bak
+LD r7, r7_bak
+
+RET
+
+r0_bak .BLKW 1
+r1_bak .BLKW 1
+
+;###################################
+
 HALT_fn
 
 ;###################################

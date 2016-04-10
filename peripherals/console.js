@@ -45,10 +45,15 @@ Console.prototype.command = function (cmd) {
   if (cmd & 2) { // Display Char
     this.displayReady = 0
     this.status()
-    console.log((this.debug ? 'OUTPUT(CHAR): ' : '') + String.fromCharCode(this.outputKey))
+    this.output(String.fromCharCode(this.outputKey))
     this.displayReady = 1
     this.status()
   }
+}
+
+Console.prototype.output = function () {
+  if (require && process) process.stdout.write(String.fromCharCode(this.outputKey))
+  else console.log((this.debug ? 'OUTPUT(CHAR): ' : '') + String.fromCharCode(this.outputKey))
 }
 
 Console.prototype.input = function (value) {
