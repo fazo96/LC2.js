@@ -34,6 +34,7 @@ function Console (lc2, position, debug) {
 Console.prototype.status = function () {
   var s = (this.lastReadKey !== 0 ? 2 : 0) + (this.displayReady !== 0 ? 1 : 0)
   this.lc2.memory[this.position + 3] = s
+  if (this.debug) console.log('Console Peripheral Status:', s)
   return s
 }
 
@@ -63,10 +64,20 @@ Console.prototype.loadSubroutines = function () {
   var Assembler = require('../lib/assembler.js')
   var a = new Assembler(this.lc2.debug)
   var c = a.toBinary(a.assemble(data.toString('utf-8')))
-  console.log(c[0].toString(16))
-  console.log(c[1].toString(16))
   if (this.lc2.debug) console.log('Loading Console subroutines...')
   this.lc2.loadCode(c)
+}
+
+Console.prototype.mem = function (i) {
+  var ret = 0
+  if (i === 0) ret = this.lastReadKey
+  else if (i === 1) ret = this.outputKey
+  else if (i === 3) ret = this.status()
+  return ret
+}
+
+Console.prototype.write = function (value) {
+  this.outputKey = value
 }
 
 if (module && module.exports) {

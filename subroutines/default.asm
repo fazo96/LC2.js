@@ -37,6 +37,8 @@ brnz WT_OUT
 STI r0, out_loc
 
 ; Send Command
+and r1, r1, #0
+add r1, r1, #2
 STI r1, cmd_loc ; send command to console
 
 ; Reload registers and return
