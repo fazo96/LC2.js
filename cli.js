@@ -79,7 +79,7 @@ cli
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
         var assembler = new Assembler(cli.debug, options.magic)
-        var binary = assembler.toBinary(assembler.assemble(data.toString()))
+        var binary = assembler.toBinary(assembler.assemble(data.toString()), true)
         if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => common.pad(x.toString(2), 16)))
         var buffer = new Buffer(binary.buffer)
         if (cli.debug) console.log('WRITING BUFFER:', buffer)
