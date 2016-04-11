@@ -27,27 +27,25 @@ function Console (lc2, position, debug) {
   this.debug = debug || false
   this.name = 'Console'
   this.lastReadKey = 0
+  this.inputBuffer = 0
   this.outputKey = 0
   this.displayReady = 1
 }
 
 Console.prototype.status = function () {
   var s = (this.lastReadKey !== 0 ? 2 : 0) + (this.displayReady !== 0 ? 1 : 0)
-  this.lc2.memory[this.position + 3] = s
   if (this.debug) console.log('Console Peripheral Status:', s)
   return s
 }
 
 Console.prototype.command = function (cmd) {
   if (cmd & 1) { // Key Read
-    this.lastReadKey = 0
+    this.lastReadKey = 1
   }
   if (cmd & 2) { // Display Char
     this.displayReady = 0
-    this.status()
     this.output(String.fromCharCode(this.outputKey))
     this.displayReady = 1
-    this.status()
   }
 }
 
@@ -57,10 +55,10 @@ Console.prototype.output = function () {
 }
 
 Console.prototype.input = function (value) {
-  if (this.lastReadKey !== 0) return
-  this.lastReadKey = value.charCodeAt(0)
-  this.lc2.memory[this.position + 1] = value.charCodeAt(0)
-  this.status()
+  if (typeof value === 'string') this.inputBuffer = value.charCodeAt(0)
+  else this.inputBuffer = parseInt(value, 10)
+  this.lastReadKey = 0
+  if (this.debug) console.log('Inputting', value, 'into console: saving it as', this.lastReadKey)
 }
 
 Console.prototype.loadSubroutines = function () {
@@ -75,13 +73,14 @@ Console.prototype.loadSubroutines = function () {
 
 Console.prototype.mem = function (i) {
   var ret = 0
-  if (i === 0) ret = this.lastReadKey
+  if (i === 0) ret = this.inputBuffer
   else if (i === 1) ret = this.outputKey
   else if (i === 3) ret = this.status()
   return ret
 }
 
 Console.prototype.write = function (value) {
+  if (typeof value === 'string') value = value.charCodeAt(0)
   this.outputKey = value
 }
 

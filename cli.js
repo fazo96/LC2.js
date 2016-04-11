@@ -32,19 +32,24 @@ var process = require('process')
 var proginfo = require('./package.json')
 
 var done = false
-
-function readChar (block, done, prompt) {
-  process.stdin.setEncoding('utf8')
-  process.stdin.setRawMode(!block)
-  if (block) process.stdin.write(prompt || '$> ')
-  var cb = function () {
-    var r = process.stdin.read()
-    if (r !== null) {
-      done(r.charCodeAt(0))
-      process.stdin.removeListener('readable', cb)
+process.stdin.setEncoding('utf8')
+var cpu
+var onReadCb
+var reading = false
+function readingFn (v) {
+  if (v) reading = v
+  return reading
+}
+function onRead (key) {
+  if (key !== null) {
+    if (cli.debug) console.log('Key:', key)
+    if (key === '\u0003') process.exit()
+    if (key.charCodeAt(0) === 13 && readingFn() && onReadCb) onReadCb(key.charCodeAt(0))
+    else if (cpu) {
+      cpu.console.input(key)
     }
+    readingFn(false)
   }
-  process.stdin.on('readable', cb)
 }
 
 cli
@@ -103,9 +108,9 @@ cli
       if (err) {
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
-        var cpu = new LC2(cli.debug)
-        cpu.readChar = readChar
-        // cpu.writeString = cpu.writeChar = writeToStdout
+        cpu = new LC2(cli.debug)
+        process.stdin.setRawMode(true)
+        process.stdin.on('data', onRead)
         // Convert Buffer to Uint16Array
         var arr = new Uint16Array(data.length / 2)
         for (var i = 0; i < data.length; i += 2) {
@@ -129,7 +134,9 @@ cli
               if (cli.debug) {
                 console.log(cpu.regdump().join('\n'))
               }
-              readChar(true, () => cpu.step(cb), 'Press enter to perform next step.')
+              onReadCb = () => { cpu.step(cb); reading = true }
+              reading = true
+              console.log('Press enter to perform next step.')
             }
           }
           cpu.step(cb)
