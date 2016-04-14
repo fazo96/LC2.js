@@ -127,4 +127,27 @@ gr1_bak .BLKW 1
 
 ;###################################
 
+IN_fn
+
+;###################################
+
+; print the prompt
+ST r7, ir7_bak
+LEA r0, prompt
+PUTS
+
+; wait for user input then return
+iloop GETC
+OUT
+ADD r0, r0, #0
+brz iloop
+
+LD r7, ir7_bak
+RET
+
+ir7_bak .BLKW 1
+prompt .STRINGZ "Input a character > "
+
+;###################################
+
 .END

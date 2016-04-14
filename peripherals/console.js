@@ -58,7 +58,7 @@ Console.prototype.input = function (value) {
   if (typeof value === 'string') this.inputBuffer = value.charCodeAt(0)
   else this.inputBuffer = parseInt(value, 10)
   this.lastReadKey = 0
-  if (this.debug) console.log('Inputting', value, 'into console: saving it as', this.lastReadKey)
+  if (this.debug) console.log('Inputting', value, 'into console: saving it as', this.inputBuffer)
 }
 
 Console.prototype.loadSubroutines = function () {
