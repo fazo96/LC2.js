@@ -91,8 +91,8 @@ HALT_fn
 
 ;###################################
 
-and r0, r0, #0
-STI r0, mac_on_loc
+and r7, r7, #0
+STI r7, mac_on_loc
 ; MACHINE SHOULD NOW TURN OFF
 
 mac_on_loc .FILL xFF15
