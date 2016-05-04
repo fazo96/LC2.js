@@ -66,9 +66,15 @@ Console.prototype.loadSubroutines = function () {
   var data = fs.readFileSync(__dirname + '/../subroutines/default.asm')
   var Assembler = require('../lib/assembler.js')
   var a = new Assembler(this.lc2.debug)
-  var c = a.toBinary(a.assemble(data.toString('utf-8')))
+  var assembled = a.assemble(data.toString('utf-8'))
+  var c = a.toBinary(assembled)
   if (this.lc2.debug) console.log('Loading Console subroutines...')
   this.lc2.loadCode(c)
+  var s = parseInt('20', 16)
+  for (var i = 0; i < 6; i++) {
+    this.lc2.memory[s + i] = assembled[0] + i
+    if (this.lc2.debug) console.log('Loading Subroutine at', this.lc2.memory[s + i].toString(16), 'into', (s + i).toString(16))
+  }
 }
 
 Console.prototype.mem = function (i) {
