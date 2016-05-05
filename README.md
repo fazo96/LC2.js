@@ -37,7 +37,7 @@ interface for the browser.
 __Notice__: this software is still experimental and also incomplete.
 Documentation is also still lacking.
 
-1. run `npm install -g lc2`
+1. run `npm install -g lc2.js`
 1. use the newly available `lc2` command
 
 The CLI will be available on NPM once a stable release is ready.
@@ -61,7 +61,7 @@ var assembler = new Assembler()
 // exist.
 ```
 
-Of course you need the `lc2` module from npm installed.
+Of course you need the `lc2.js` module from npm installed.
 
 On the __browser__, import `lib/common.js` then the other scripts depending on
 which you need. Assembler and LC2 should then be attached to window and
