@@ -36,16 +36,26 @@ process.stdin.setEncoding('utf8')
 var cpu
 var onReadCb
 var reading = false
+
+// Control reading and writing of the `reading` variable, so that it doesn't get
+// sucked into function scopes and it stays in sync.
 function readingFn (v) {
   if (v) reading = v
   return reading
 }
+
+// This function processes an input key from STDIN.
 function onRead (key) {
   if (key !== null) {
     if (cli.debug) console.log('Key:', key)
+    // Exits on CTRL-C
     if (key === '\u0003') process.exit()
+    // If enter is pressed and the program is waiting for the user to press enter
+    // so that the emulator can step forward, then call the appropriate callback
     if (key.charCodeAt(0) === 13 && readingFn() && onReadCb) onReadCb(key.charCodeAt(0))
     else if (cpu) {
+      // Since the CPU is initialized and the program is not waiting for the user
+      // to press enter, pass the pressed key to the LC-2 CPU Console.
       cpu.console.input(key)
     }
     readingFn(false)
@@ -83,9 +93,11 @@ cli
       if (err) {
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
+        // Start assembling
         var assembler = new Assembler(cli.debug, options.magic)
         var binary = assembler.toBinary(assembler.assemble(data.toString()), true)
         if (cli.debug) console.log('ASSEMBLED:', Array.from(binary).map(x => common.pad(x.toString(2), 16)))
+        // Create and store the data buffer to file
         var buffer = new Buffer(binary.buffer)
         if (cli.debug) console.log('WRITING BUFFER:', buffer)
         fs.writeFile(output, buffer, err => {
@@ -109,6 +121,7 @@ cli
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
         cpu = new LC2(cli.debug)
+        // Start catching key events from STDIN and pass them to the onRead
         process.stdin.setRawMode(true)
         process.stdin.on('data', onRead)
         // Convert Buffer to Uint16Array
@@ -120,12 +133,14 @@ cli
         if (options.step && !cli.debug) console.log('[WARNING] Step By Step enabled, but debug mode disabled!')
         console.log('Loading Program...')
         cpu.loadProgram(arr)
+        // Called when the LC-2 program has finished running
         function end () {
           console.log('\n=== REG DUMP ===\n' + cpu.regdump().join('\n'))
           if (options.memDump) console.log('\n\n=== MEM DUMP ===\n' + cpu.memdump(0, 65535).join('\n'))
           process.exit() // workaround for stdin event listener hanging
         }
-        if (options.step) { // Step by step
+        if (options.step) {
+          // Step by step mode
           console.log('Running Program Step by Step...')
           function cb (finished) {
             if (finished) {
@@ -140,7 +155,8 @@ cli
             }
           }
           cpu.step(cb)
-        } else { // Run program
+        } else {
+          // Run full program
           console.log('Running Program...')
           cpu.run(end)
         }
