@@ -1,5 +1,5 @@
 module.exports = {
-  Assembler: require('assembler.js'),
-  Common: require('common.js'),
-  LC2: require('lc2.js')
+  Assembler: require('./lib/assembler.js'),
+  Common: require('./lib/common.js'),
+  LC2: require('./lib/LC2.js')
 }

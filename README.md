@@ -62,9 +62,8 @@ var assembler = new LC2.Assembler()
 
 Of course you need the `lc2.js` module from npm installed.
 
-On the __browser__, import `lib/common.js` then the other scripts depending on
-which you need. Assembler and LC2 should then be attached to window and
-available globally. This has not been tested yet though.
+On the __browser__, you will need to browserify `lib.js` using browserify,
+webpack, or other tools.
 
 ### License
 
