@@ -13,18 +13,16 @@ You can find Documentation on the LC-2 in
 
 - __CPU Emulator__
     - finished, except:
-        - some missing default subroutines will be implemented shortly, the old version of them is implemented in the stable branch though.
-          - support for interrupts
+      - support for interrupts
+      - support for PUTSP subroutine
+    - peripheral emulation code is a placeholder for an accurate implementation
     - debug mode is a little ugly
-    - peripheral emulation code incomplete
-    - needs more testing
 - __Assembler__
     - feature complete with original assembler
-    - error handling is not polished yet
+    - error handling is nowhere near good enough
     - debug mode is a little ugly
-    - needs more testing
 - __APIs__
-    - undocumented, but mostly complete
+    - done, not very well documented
 - __User Interfaces__
     - Command Line Interface (available as the `lc2` command) done, still unpolished though
     - no graphical user interface or IDE yet
@@ -39,8 +37,7 @@ interface for the browser.
 __Notice__: this software is still experimental and also incomplete.
 Documentation is also still lacking.
 
-1. clone this repository, then `cd` to its directory
-1. run `npm install -g .`
+1. run `npm install -g lc2`
 1. use the newly available `lc2` command
 
 The CLI will be available on NPM once a stable release is ready.
@@ -51,7 +48,7 @@ the LC2 emulator and Assembler both offer an API so that you can use them
 programmatically. These APIs are not documented yet but will be once a stable,
 complete version arrives.
 
-On __node__:
+On __node__, __browserify__ or __webpack__:
 
 ```javascript
 // CPU emulator
@@ -63,6 +60,8 @@ var assembler = new Assembler()
 // use them! Read the code to figure out the API, in the future proper docs will
 // exist.
 ```
+
+Of course you need the `lc2` module from npm installed.
 
 On the __browser__, import `lib/common.js` then the other scripts depending on
 which you need. Assembler and LC2 should then be attached to window and
