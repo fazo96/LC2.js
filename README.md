@@ -52,11 +52,10 @@ On __node__, __browserify__ or __webpack__:
 
 ```javascript
 // CPU emulator
-var LC2 = require('./LC2.js')
-var cpu = new LC2()
+var LC2 = require('lc2.js')
+var cpu = new LC2.LC2()
 // Assembler
-var Assembler = require('./assembler.js')
-var assembler = new Assembler()
+var assembler = new LC2.Assembler()
 // use them! Read the code to figure out the API, in the future proper docs will
 // exist.
 ```
