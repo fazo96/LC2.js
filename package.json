@@ -1,6 +1,6 @@
 {
   "name": "lc2.js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "LC-2 CPU emulator, assembler and debugger",
   "main": "lib.js",
   "bin": {
