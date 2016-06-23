@@ -121,6 +121,7 @@ cli
         console.log('[FATAL] There was an error while reading the file:', err)
       } else {
         cpu = new LC2(cli.debug)
+        cpu.turnOn()
         // Start catching key events from STDIN and pass them to the onRead
         process.stdin.setRawMode(true)
         process.stdin.on('data', onRead)
