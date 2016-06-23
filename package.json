@@ -1,6 +1,6 @@
 {
   "name": "lc2.js",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "LC-2 CPU emulator, assembler and debugger",
   "main": "lib.js",
   "bin": {
@@ -18,5 +18,8 @@
   "homepage": "https://github.com/fazo96/LC2.js#readme",
   "dependencies": {
     "commander": "^2.9.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }

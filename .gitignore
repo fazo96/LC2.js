@@ -1,6 +1,5 @@
 node_modules/
 *.bin
-*.obj
 *.sym
 *.lst
 *.hex
