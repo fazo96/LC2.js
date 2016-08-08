@@ -13,8 +13,12 @@ describe('Assembler "complex programs" test suite', () => {
     let assembler = new Assembler()
     let assembled = assembler.assemble(file)
     let binaryFilename = filename.replace(/\.asm$/g, '.obj')
-    return { filename, binaryFilename, binary: assembler.toBinary(assembled) }
+    let errors = assembler.showErrors(assembled)
+    return { filename, binaryFilename, errors, binary: assembler.toBinary(assembled), object: assembled }
   }).map(item => {
+    if (item.errors.length > 0) {
+      assert.isNotOk('assembler errors', 'too many errors:\n' + item.errors.join('\n'))
+    }
     let data = fs.readFileSync(path.join(folder, item.binaryFilename))
     // Convert Buffer to Uint16Array
     let arr = new Uint16Array(data.length / 2)
@@ -24,11 +28,12 @@ describe('Assembler "complex programs" test suite', () => {
     }
     item.origBinary = arr
     return item
-  }).forEach(item => {
+  }).forEach((item, index) => {
     it('should correctly assemble "' + item.filename + '"', () => {
       assert.equal(item.binary.length, item.origBinary.length)
       for (let i = 0; i < item.binary.length; i++) {
-        assert.equal(item.binary[i], item.origBinary[i])
+        if (item.binary[i] !== item.origBinary[i]) console.log(item.object[i])
+        assert.equal(item.binary[i], item.origBinary[i], 'assembled line ' + item.object[i].row + ': ' + item.object[i].string)
       }
     })
   })
